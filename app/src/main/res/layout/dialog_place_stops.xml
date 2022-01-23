@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/modal_background"
+    android:orientation="vertical"
+    android:padding="@dimen/space8">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/space5">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="SELECCIÓN DE PARADAS"
+            android:textAlignment="center"
+            android:textSize="@dimen/h2"
+            android:layout_marginTop="@dimen/space5"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"/>
+
+        <TextView
+            android:id="@+id/id_txt_name_accompanist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Last Name, first name User"
+            android:textSize="@dimen/h3"
+            android:textAlignment="textEnd"
+            android:layout_marginTop="@dimen/space16"
+            android:textColor="@color/colorTextDark"
+            android:textStyle="normal"/>
+
+        <TextView
+            android:id="@+id/id_txt_employment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Employment"
+            android:textSize="@dimen/h3"
+            android:textAlignment="textEnd"
+            android:layout_marginTop="@dimen/space5"
+            android:textColor="@color/colorWhiteDark"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/id_txt_phone_accompanist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="+593 00 000 0000"
+            android:textSize="@dimen/h3"
+            android:textAlignment="textEnd"
+            android:layout_marginTop="@dimen/space5"
+            android:textColor="@color/colorWhiteDark"
+            android:textStyle="normal"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/space5"
+        android:layout_marginTop="@dimen/space8">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Seleccione el lugar"
+            android:textSize="@dimen/h3"
+            android:textAlignment="textStart"
+            android:layout_marginTop="@dimen/space5"
+            android:textColor="@color/colorWhiteDark"
+            android:textStyle="bold"/>
+
+        <!--androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/container_white"
+            android:backgroundTint="@color/colorWhiteDark"
+            android:layout_marginTop="@dimen/space8"
+            android:padding="@dimen/space8">
+
+            <Spinner
+                android:id="@+id/id_spinner_place"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dropdown"
+                android:textSize="@dimen/h3"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat-->
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/space16">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Mensaje"
+
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/id_txt_message_place"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:lines="4"
+                    android:gravity="top"
+                    android:overScrollMode="always"
+                    android:scrollbars="vertical"
+                    android:scrollbarStyle="insideInset"
+                    android:scrollHorizontally="false"
+                    android:textSize="@dimen/h3"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/space5">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/id_btn_enviar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space16"
+                android:background="@drawable/btn_rounded"
+                android:backgroundTint="@color/colorPrimaryText"
+                android:text="Enviar"
+                android:textColor="@color/colorWhite" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

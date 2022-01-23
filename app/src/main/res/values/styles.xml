@@ -3,8 +3,32 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryText</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:fontFamily">@font/text_me_one</item>
     </style>
 
+    <!-- Style para el toolbar-->
+    <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorControlNormal">@color/colorBackground</item>
+        <item name="titleTextColor">@color/colorBackground</item>
+    </style>
+
+    <!-- Style para el menu -->
+    <style name="bottomNavegation">
+        <item name="android:background">@color/colorBackground</item>
+        <item name="itemIconTint">@color/colorPrimaryText</item>
+        <item name="itemIconSize">22dp</item>
+        <item name="itemTextColor">@color/colorPinkTrans</item>
+    </style>
+
+    <!-- Style para el Modal Seleccion de paradas -->
+    <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
+    </style>
+    <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
 </resources>

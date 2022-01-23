@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">ApplicationBGM</string>
+    <string name="app_name">BusGeoMap v1</string>
+
+    <string-array name="route_schedule">
+        <item>IDA Santa Elena - Chanduy</item>
+        <item>VUELTA Chanduy - Santa Elena</item>
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".activities.SessionModeActivity">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.github.florent37.shapeofview.shapes.ArcView
+            android:layout_width="match_parent"
+            android:layout_height="175dp"
+            android:elevation="0dp"
+            app:shape_arc_cropDirection="outside"
+            app:shape_arc_height="20dp"
+            app:shape_arc_position="bottom">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"/>
+
+            <ImageView
+                android:id="@+id/id_img_description"
+                android:layout_width="120dp"
+                android:layout_height="179dp"
+                android:src="@drawable/bgm_textosplash"
+                android:layout_gravity="center"
+                android:layout_margin="15dp"/>
+
+        </com.github.florent37.shapeofview.shapes.ArcView>
+
+        <ImageView
+            android:id="@+id/id_img_logo"
+            android:layout_width="120dp"
+            android:layout_height="179dp"
+            android:src="@drawable/bgm_logosplash"
+            android:layout_gravity="center"
+            android:layout_margin="15dp"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_gravity="bottom"
+        android:padding="@dimen/space24"
+        android:layout_marginBottom="@dimen/space16">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/id_btn_user_employment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Empleado"
+            android:textColor="@color/colorWhite"
+            android:background="@drawable/btn_rounded"
+            android:backgroundTint="@color/colorPrimaryText"
+            android:layout_marginTop="@dimen/space16"
+            android:layout_marginLeft="@dimen/space8"
+            android:layout_marginRight="@dimen/space8"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/id_btn_user_guest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Usuario"
+            android:textColor="@color/colorWhite"
+            android:background="@drawable/btn_rounded"
+            android:backgroundTint="@color/colorPrimaryText"
+            android:layout_marginTop="@dimen/space8"
+            android:layout_marginLeft="@dimen/space8"
+            android:layout_marginRight="@dimen/space8"/>
+
+        <TextView
+            android:id="@+id/id_txt_v1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Selecciona el modo de ingreso"
+            android:layout_marginTop="@dimen/space16"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/h3"
+            android:textStyle="normal" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
