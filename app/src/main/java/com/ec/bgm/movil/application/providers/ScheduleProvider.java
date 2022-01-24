@@ -16,7 +16,7 @@ public class ScheduleProvider {
     }
 
     public Task<QuerySnapshot> findScheduleByRouteID(String routeID) {
-        return collectionReference.whereEqualTo("sch_rou_id_name", routeID).get();
+        return collectionReference.whereEqualTo("sch_rou_id_name", routeID).whereEqualTo("sch_status", true).get();
     }
 
     public Task<DocumentSnapshot> findSchedule(String idSchedule) {
@@ -25,5 +25,9 @@ public class ScheduleProvider {
 
     public Query getScheduleByID(String idSchedule) {
         return collectionReference.whereEqualTo("sch_id", idSchedule).orderBy("sch_departure_time", Query.Direction.DESCENDING);
+    }
+
+    public Query findAllSchedule() {
+        return collectionReference.whereEqualTo("sch_status", true).orderBy("sch_departure_time", Query.Direction.DESCENDING);
     }
 }

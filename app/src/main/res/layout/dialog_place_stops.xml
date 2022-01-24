@@ -75,7 +75,7 @@
             android:textColor="@color/colorWhiteDark"
             android:textStyle="bold"/>
 
-        <!--androidx.appcompat.widget.LinearLayoutCompat
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -91,7 +91,7 @@
                 android:spinnerMode="dropdown"
                 android:textSize="@dimen/h3"/>
 
-        </androidx.appcompat.widget.LinearLayoutCompat-->
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"

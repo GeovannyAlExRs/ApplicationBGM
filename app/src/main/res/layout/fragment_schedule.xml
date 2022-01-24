@@ -4,14 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".fragments.ScheduleFragment">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_marginTop="@dimen/space56"
+        android:layout_marginBottom="@dimen/space56"
         android:padding="@dimen/space8">
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -34,7 +35,7 @@
             android:id="@+id/id_route_place"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Unidad de transporte Fragment"
+            android:text="Horarios de transporte disponible"
             android:layout_marginTop="@dimen/space5"
             android:textAlignment="textEnd"/>
 

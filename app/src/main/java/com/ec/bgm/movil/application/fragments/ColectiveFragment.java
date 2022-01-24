@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
@@ -12,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,10 +23,18 @@ import com.ec.bgm.movil.application.model.Bus;
 import com.ec.bgm.movil.application.providers.AssigneBusProvider;
 import com.ec.bgm.movil.application.providers.BusProvider;
 import com.ec.bgm.movil.application.providers.CodeQRProvider;
+import com.ec.bgm.movil.application.providers.PlaceProvider;
 import com.ec.bgm.movil.application.providers.UsersProvider;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
 
 public class ColectiveFragment extends Fragment implements View.OnClickListener {
 
@@ -31,7 +42,9 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
     private TextView txt_first_name_driver, txt_last_name_driver, txt_phone_driver, txt_address_driver;
     private TextView txt_first_name_accompanist, txt_last_name_accompanist, txt_phone_accompanist, txt_address_accompanist;
 
-    private AppCompatButton ac_btn_select_stops;
+    private TextInputEditText txt_message_place;
+    private Spinner spinner_place;
+    private AppCompatButton ac_btn_select_stops, ac_btn_enviar;
 
     BottomSheetDialog bottomSheetDialog;
 
@@ -46,6 +59,8 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
     AssigneBusProvider assigneBusProvider;
     BusProvider busProvider;
     UsersProvider usersProvider;
+
+    PlaceProvider placeProvider;
 
     public ColectiveFragment() {
         // Required empty public constructor
@@ -68,6 +83,8 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
         assigneBusProvider = new AssigneBusProvider();
         busProvider = new BusProvider();
         usersProvider = new UsersProvider();
+
+        placeProvider = new PlaceProvider();
 
         findDataQR(idCodeQR);
 
@@ -173,7 +190,6 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
 
             case R.id.id_btn_select_stops:
                 Toast.makeText(ColectiveFragment.this.getActivity(), "Muestra Ahora...", Toast.LENGTH_SHORT).show();
-                //goToView(PlaceStopsActivity.class);
                 gotoModalPlace();
                 break;
             case R.id.id_btn_enviar:
@@ -188,10 +204,38 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
         bottomSheetDialog.setContentView(R.layout.dialog_place_stops);
         bottomSheetDialog.setCanceledOnTouchOutside(false);
 
-        AppCompatButton ac_btn_enviar = bottomSheetDialog.findViewById(R.id.id_btn_enviar);
+
+        ac_btn_enviar = bottomSheetDialog.findViewById(R.id.id_btn_enviar);
         ac_btn_enviar.setOnClickListener(this);
 
+        txt_message_place = bottomSheetDialog.findViewById(R.id.id_txt_message_place);
+        spinner_place = bottomSheetDialog.findViewById(R.id.id_spinner_place);
+
+        getDataPlaceSpinner();
+
         bottomSheetDialog.show();
+    }
+
+    private void getDataPlaceSpinner() {
+        placeProvider.findAllPlace().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    final ArrayList<String> placeList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        String placeName = document.getString("pla_name");
+                        placeList.add(placeName);
+                    }
+                    placeSpinner(placeList);
+                }
+            }
+        });
+    }
+
+    private void placeSpinner(ArrayList<String> placeList) {
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, placeList);
+        arrayAdapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
+        spinner_place.setAdapter(arrayAdapter);
     }
 
     private void goToView(Class activiyClass) {
