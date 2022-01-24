@@ -1,5 +1,6 @@
 package com.ec.bgm.movil.application.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
@@ -10,7 +11,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.ec.bgm.movil.application.R;
+import com.ec.bgm.movil.application.providers.AuthFirebaseProvider;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.AuthResult;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -24,12 +29,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private static final int OPTIONVIEW1 = 1;
     private static final int OPTIONVIEW2 = 2;
 
+    AuthFirebaseProvider authFirebaseProvider;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         getViewId();
+
+        authFirebaseProvider = new AuthFirebaseProvider();
     }
 
     private void getViewId() {
@@ -50,9 +59,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 finish();
                 break;
             case R.id.id_btn_login:
-                Toast.makeText(this, "Proximamente...", Toast.LENGTH_SHORT).show();
                 goToLogin();
-                goToView(MainActivity.class, OPTIONVIEW1);
                 break;
         }
     }
@@ -62,7 +69,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String clave = txt_password.getText().toString();
         Log.d("ENTRADA", "email: " + email + ", password: " + clave);
 
-        /*firebaseAuth.login(email, clave).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        authFirebaseProvider.login(email, clave).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
@@ -72,7 +79,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Toast.makeText(LoginActivity.this, "El Email o la clave son incorrectas", Toast.LENGTH_SHORT).show();
                 }
             }
-        });*/
+        });
     }
 
     private void goToView(Class activiyClass, int option) {

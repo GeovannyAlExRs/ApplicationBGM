@@ -1,11 +1,14 @@
 package com.ec.bgm.movil.application.fragments;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +16,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ec.bgm.movil.application.R;
+import com.ec.bgm.movil.application.model.Bus;
+import com.ec.bgm.movil.application.providers.AssigneBusProvider;
+import com.ec.bgm.movil.application.providers.BusProvider;
+import com.ec.bgm.movil.application.providers.CodeQRProvider;
+import com.ec.bgm.movil.application.providers.UsersProvider;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 public class ColectiveFragment extends Fragment implements View.OnClickListener {
 
@@ -25,17 +35,136 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
 
     BottomSheetDialog bottomSheetDialog;
 
+    SharedPreferences sharedPreferencesCode; // guardar el valor del code qr
+    private static final String CODEQR = "code";
+
+    SharedPreferences sharedPreferencesAssigneBus; // guardar el valor del code qr
+    SharedPreferences.Editor editorAssigneBus;
+    private static final String ASSGINEBUS = "asbus";
+
+    CodeQRProvider codeQRProvider;
+    AssigneBusProvider assigneBusProvider;
+    BusProvider busProvider;
+    UsersProvider usersProvider;
+
     public ColectiveFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_colective, container, false);
+
         getViewId(view);
+
+        sharedPreferencesCode = ColectiveFragment.this.getActivity().getSharedPreferences(CODEQR, Context.MODE_PRIVATE);
+        String idCodeQR = sharedPreferencesCode.getString("qr", "");
+
+        sharedPreferencesAssigneBus = ColectiveFragment.this.getActivity().getSharedPreferences(ASSGINEBUS, Context.MODE_PRIVATE);
+        editorAssigneBus = sharedPreferencesAssigneBus.edit();
+
+        codeQRProvider = new CodeQRProvider();
+        assigneBusProvider = new AssigneBusProvider();
+        busProvider = new BusProvider();
+        usersProvider = new UsersProvider();
+
+        findDataQR(idCodeQR);
+
         return view;
+    }
+
+    private void findDataQR(String idQR) {
+        codeQRProvider.readCodeQRByID(idQR).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    if (documentSnapshot.contains("gqr_asb_bus_id")) {
+                        String idAssigneBus = documentSnapshot.getString("gqr_asb_bus_id");
+                        editorAssigneBus.putString("asbID", idAssigneBus);
+                        editorAssigneBus.apply();
+                        Log.d("ENTRO", "RECUPERO ID DE ASSIGNE BUS  " + idAssigneBus);
+                        findDataAssigneBus(idAssigneBus);
+                    }
+
+                }
+            }
+        });
+    }
+
+    private void findDataAssigneBus(String id) {
+        assigneBusProvider.getAsigneBus(id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    if (documentSnapshot.contains("asb_bus_id")) {
+                        String idBus = documentSnapshot.getString("asb_bus_id");
+                        findDataBus(idBus);
+
+                        String idUserDriver = documentSnapshot.getString("asb_driver_id");
+                        finDataUser(idUserDriver, 1);
+
+                        String idUseraccompanist = documentSnapshot.getString("asb_accompanist_id");
+                        finDataUser(idUseraccompanist, 2);
+
+                    }
+
+                }
+            }
+        });
+    }
+
+    private void findDataBus(String id) {
+        Log.d("ENTRO", "(BUS) BUSCAR POR ID " + id);
+        busProvider.getBusByID(id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Log.d("ENTRO", "entro a verificar " + id);
+                if (documentSnapshot.exists()) {
+                    Bus bus = documentSnapshot.toObject(Bus.class);
+
+                    Log.d("ENTRO", "DATOS   pasados al objeto BUS " + bus.getBus_registration_number() + " " + bus.getBus_number_disc() + " " + bus.getBus_size());
+
+                    long disco = documentSnapshot.getLong("bus_number_disc");
+                    String placa = documentSnapshot.getString("bus_registration_number");
+                    long capacidad = documentSnapshot.getLong("bus_size");
+
+                    txt_number_disc_bus.setText(String.valueOf(disco));
+                    txt_registration_number.setText(placa);
+                    txt_sch_bus_size.setText(String.valueOf(capacidad));
+
+                }
+            }
+        });
+    }
+
+    private void finDataUser(String id, int option) {
+        Log.d("ENTRO", "(USER) BUSCAR POR ID " + id);
+        usersProvider.getUserByID(id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Log.d("ENTRO", "(USER) Entro a verificar " + id);
+                if (documentSnapshot.exists()) {
+                    String first_name_driver = documentSnapshot.getString("use_first_name");
+                    String last_name_driver = documentSnapshot.getString("use_last_name");
+                    String phone_driver = documentSnapshot.getString("use_phone");
+                    String address_driver = documentSnapshot.getString("use_address");
+
+                    if (option == 1) {
+                        txt_first_name_driver.setText(first_name_driver);
+                        txt_last_name_driver.setText(last_name_driver);
+                        txt_phone_driver.setText(phone_driver);
+                        txt_address_driver.setText(address_driver);
+                    } else {
+                        txt_first_name_accompanist.setText(first_name_driver);
+                        txt_last_name_accompanist.setText(last_name_driver);
+                        txt_phone_accompanist.setText(phone_driver);
+                        txt_address_accompanist.setText(address_driver);
+                    }
+
+                }
+            }
+        });
     }
 
     @Override
@@ -87,8 +216,5 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
 
         ac_btn_select_stops = view.findViewById(R.id.id_btn_select_stops);
         ac_btn_select_stops.setOnClickListener(this);
-
-        //BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(ColectiveFragment.this.getActivity(), R.style.BottomSheetDialogTheme);
-        //view = LayoutInflater.from(ColectiveFragment.this.getActivity()).inflate(R.layout.);
     }
 }

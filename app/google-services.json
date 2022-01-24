@@ -1,0 +1,85 @@
+{
+  "project_info": {
+    "project_number": "796864090025",
+    "firebase_url": "https://practica1-busgeomap.firebaseio.com",
+    "project_id": "practica1-busgeomap",
+    "storage_bucket": "practica1-busgeomap.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:796864090025:android:a62909d61362befab73eb8",
+        "android_client_info": {
+          "package_name": "com.ec.bgm.movil.application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "796864090025-2mt3ljcfqtu9ocerg53dg0igpt5tcd0t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ec.bgm.movil.application",
+            "certificate_hash": "cc1fa11e2a05fa188bf49bd52c373440d4757e63"
+          }
+        },
+        {
+          "client_id": "796864090025-53t4dcg7b1mfjubvknmbpeup12u77opr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjhQFoMZ3DN-REXuiYO5V5yMU9Tp4QjRw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "796864090025-53t4dcg7b1mfjubvknmbpeup12u77opr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:796864090025:android:5a6dade532a9b200b73eb8",
+        "android_client_info": {
+          "package_name": "com.ec.busgeomap.movil.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "796864090025-suumum1d7ar2mo74of7td2e88pr4m6eq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ec.busgeomap.movil.app",
+            "certificate_hash": "4d84387fe4513cccca4359b0bdf83ee834582d57"
+          }
+        },
+        {
+          "client_id": "796864090025-53t4dcg7b1mfjubvknmbpeup12u77opr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjhQFoMZ3DN-REXuiYO5V5yMU9Tp4QjRw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "796864090025-53t4dcg7b1mfjubvknmbpeup12u77opr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
