@@ -54,7 +54,7 @@ public class ScheduleAdapter extends FirestoreRecyclerAdapter<Schedule, Schedule
 
     @Override
     protected void onBindViewHolder(@NonNull ViewHolderSchedule holder, int position, @NonNull Schedule schedule) {
-        Log.d("ENTRO", "(ADAPTER) HORARIOS " + schedule.getSch_id() + " " + schedule.getSch_state());
+        Log.d("ENTRO", "(ADAPTER) HORARIOS " + schedule.getSch_id() + " " + schedule.getSch_state() + " " + schedule.getSch_status());
 
         SimpleDateFormat dateformat = new SimpleDateFormat("HH:mm");
         Date time = new Date(schedule.getSch_departure_time());

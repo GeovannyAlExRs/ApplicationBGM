@@ -7,17 +7,33 @@
     android:layout_height="match_parent"
     tools:context=".fragments.MapsFragment">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/id_btn_maps"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Conectarse"
+        android:textColor="@color/colorWhite"
+        android:background="@drawable/btn_rounded"
+        android:backgroundTint="@color/colorPrimaryText"
+        android:layout_marginBottom="75dp"
+        android:layout_marginLeft="@dimen/space56"
+        android:layout_marginRight="@dimen/space56"
+        android:layout_gravity="bottom"/>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_marginTop="@dimen/space56"
-        android:padding="@dimen/space16">
+        android:padding="@dimen/space8"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-        <TextView
+        <com.here.sdk.mapview.MapView
+            android:id="@+id/id_map_view_here"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Here Maps Fragment" />
+            android:layout_height="match_parent">
+        </com.here.sdk.mapview.MapView>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

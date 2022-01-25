@@ -24,7 +24,7 @@
             android:textColor="@color/colorPrimaryDark"/>
 
         <TextView
-            android:id="@+id/id_txt_name_accompanist"
+            android:id="@+id/id_txt_name_accompanist_bsd"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Last Name, first name User"
@@ -35,10 +35,10 @@
             android:textStyle="normal"/>
 
         <TextView
-            android:id="@+id/id_txt_employment"
+            android:id="@+id/id_txt_employment_bsd"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Employment"
+            android:text="Acompañante"
             android:textSize="@dimen/h3"
             android:textAlignment="textEnd"
             android:layout_marginTop="@dimen/space5"
@@ -46,7 +46,7 @@
             android:textStyle="bold"/>
 
         <TextView
-            android:id="@+id/id_txt_phone_accompanist"
+            android:id="@+id/id_txt_phone_accompanist_bsd"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="+593 00 000 0000"

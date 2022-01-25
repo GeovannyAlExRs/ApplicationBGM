@@ -43,7 +43,9 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
     private TextView txt_first_name_accompanist, txt_last_name_accompanist, txt_phone_accompanist, txt_address_accompanist;
 
     private TextInputEditText txt_message_place;
+    private TextView txt_name_accompanist_bsd, txt_phone_accompanist_bsd, txt_employment_bsd;
     private Spinner spinner_place;
+
     private AppCompatButton ac_btn_select_stops, ac_btn_enviar;
 
     BottomSheetDialog bottomSheetDialog;
@@ -61,6 +63,10 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
     UsersProvider usersProvider;
 
     PlaceProvider placeProvider;
+
+    String idUserAccompanist;
+    String nameUserAccompanist;
+    String phoneAccompanist;
 
     public ColectiveFragment() {
         // Required empty public constructor
@@ -162,21 +168,27 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Log.d("ENTRO", "(USER) Entro a verificar " + id);
                 if (documentSnapshot.exists()) {
-                    String first_name_driver = documentSnapshot.getString("use_first_name");
-                    String last_name_driver = documentSnapshot.getString("use_last_name");
-                    String phone_driver = documentSnapshot.getString("use_phone");
-                    String address_driver = documentSnapshot.getString("use_address");
+                    String idUser = documentSnapshot.getString("use_id");
+                    String first_name = documentSnapshot.getString("use_first_name");
+                    String last_name = documentSnapshot.getString("use_last_name");
+                    String phone = documentSnapshot.getString("use_phone");
+                    String address = documentSnapshot.getString("use_address");
 
                     if (option == 1) {
-                        txt_first_name_driver.setText(first_name_driver);
-                        txt_last_name_driver.setText(last_name_driver);
-                        txt_phone_driver.setText(phone_driver);
-                        txt_address_driver.setText(address_driver);
+                        txt_first_name_driver.setText(first_name);
+                        txt_last_name_driver.setText(last_name);
+                        txt_phone_driver.setText(phone);
+                        txt_address_driver.setText(address);
                     } else {
-                        txt_first_name_accompanist.setText(first_name_driver);
-                        txt_last_name_accompanist.setText(last_name_driver);
-                        txt_phone_accompanist.setText(phone_driver);
-                        txt_address_accompanist.setText(address_driver);
+                        txt_first_name_accompanist.setText(first_name);
+                        txt_last_name_accompanist.setText(last_name);
+                        txt_phone_accompanist.setText(phone);
+                        txt_address_accompanist.setText(address);
+
+                        // Data of User Accompanist for Botton Sheet Dialog
+                        idUserAccompanist = idUser;
+                        nameUserAccompanist = first_name + " " + last_name;
+                        phoneAccompanist = phone;
                     }
 
                 }
@@ -209,8 +221,16 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
         ac_btn_enviar.setOnClickListener(this);
 
         txt_message_place = bottomSheetDialog.findViewById(R.id.id_txt_message_place);
+
+        txt_employment_bsd = bottomSheetDialog.findViewById(R.id.id_txt_employment_bsd);
+        txt_name_accompanist_bsd = bottomSheetDialog.findViewById(R.id.id_txt_name_accompanist_bsd);
+        txt_phone_accompanist_bsd = bottomSheetDialog.findViewById(R.id.id_txt_phone_accompanist_bsd);
+
         spinner_place = bottomSheetDialog.findViewById(R.id.id_spinner_place);
 
+        txt_employment_bsd.setText(idUserAccompanist);
+        txt_name_accompanist_bsd.setText(nameUserAccompanist);
+        txt_phone_accompanist_bsd.setText(phoneAccompanist);
         getDataPlaceSpinner();
 
         bottomSheetDialog.show();

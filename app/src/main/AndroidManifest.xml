@@ -11,6 +11,11 @@
         android:roundIcon="@drawable/ico_appbgm"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!--  Set your credentials for the HERE SDK.  -->
+        <meta-data android:name="com.here.sdk.access_key_id" android:value="xERqd5uYl_kr44WtxDVeVQ"/>
+        <meta-data android:name="com.here.sdk.access_key_secret" android:value="K4hyrY_YbrjRzVuEi03rXS7m9NExDvkA9Wp_f7zQn-5w_-PgkZ1cO2OQygnjYBMeC3hDP25yg-eQDHRK4Pigqw"/>
+
         <activity
             android:name=".activities.CaptureQRActivity"
             android:screenOrientation="portrait"
