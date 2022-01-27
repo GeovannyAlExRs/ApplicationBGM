@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Toast.makeText(LoginActivity.this, "INGRESO CORRECTO", Toast.LENGTH_SHORT).show();
                     goToView(MainActivity.class, OPTIONVIEW1);
                 } else {
-                    Toast.makeText(LoginActivity.this, "El Email o la clave son incorrectas", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "El Email o la clave son incorrectas", Toast.LENGTH_LONG).show();
                 }
             }
         });

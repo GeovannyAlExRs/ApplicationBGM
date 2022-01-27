@@ -60,7 +60,7 @@ public class ScheduleFragment extends Fragment {
 
         return view;
     }
-
+/*
     private void getDataRouteSpinner() {
         routeProvider.findAllRoute().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -136,11 +136,10 @@ public class ScheduleFragment extends Fragment {
             }
         });
     }
+*/
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        //getDataRouteSpinner();
+
+    private void getAllScheduleRecyclerView() {
         Query query = scheduleProvider.findAllSchedule();
         Log.d("ENTRO", "Entro al onStart QUERY " + query.get());
 
@@ -148,9 +147,18 @@ public class ScheduleFragment extends Fragment {
                 .setQuery(query, Schedule.class)
                 .build();
 
-        scheduleAdapter = new ScheduleAdapter(options, ScheduleFragment.this.getActivity());
+        Log.d("ENTRO", "FirestoreRecyclerview OPTIONS " +options.toString());
+
+        scheduleAdapter = new ScheduleAdapter(options, getContext());
+        scheduleAdapter.notifyDataSetChanged();
         recyclerview_schedule.setAdapter(scheduleAdapter);
         scheduleAdapter.startListening();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getAllScheduleRecyclerView();
     }
 
     @Override

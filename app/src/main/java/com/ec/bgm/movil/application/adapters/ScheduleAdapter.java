@@ -45,6 +45,8 @@ public class ScheduleAdapter extends FirestoreRecyclerAdapter<Schedule, Schedule
 
         this.context =context;
 
+        Log.d("ENTRO", "INICIO EL ADAPTERS");
+
         assigneBusProvider = new AssigneBusProvider();
         busProvider = new BusProvider();
 
@@ -79,32 +81,53 @@ public class ScheduleAdapter extends FirestoreRecyclerAdapter<Schedule, Schedule
         return new ViewHolderSchedule(view);
     }
 
-    private void findDiscAssigneBus(String idAssigneBus, ViewHolderSchedule holder) {
+    private void findDiscAssigneBus(String idAssigneBus, final ViewHolderSchedule holder) {
         assigneBusProvider.getAsigneBus(idAssigneBus).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
-                    String idBus = documentSnapshot.getString("asb_bus_id");
-                    findDataBus(idBus, holder);
+                    if (documentSnapshot.contains("asb_bus_id")) {
+                        String idBus = documentSnapshot.getString("asb_bus_id");
+                        findDataBus(idBus, holder);
+                    }
                 }
             }
         });
     }
 
-    private void findDataBus(String idBus, ViewHolderSchedule holder) {
+    private void findDataBus(String idBus, final ViewHolderSchedule holder) {
         busProvider.getBusByID(idBus).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
-                    Long busDisc = documentSnapshot.getLong("bus_number_disc");
-                    holder.txt_sch_number_disc_bus.setText(String.valueOf(busDisc));
+                    if (documentSnapshot.contains("bus_number_disc")) {
+                        Long busDisc = documentSnapshot.getLong("bus_number_disc");
+                        holder.txt_sch_number_disc_bus.setText(String.valueOf(busDisc));
+                    }
                 }
             }
         });
     }
 
-    private void findRoutePlace(String idRoute, ViewHolderSchedule holder) {
-        routeProvider.findRouteByID(idRoute).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+    private void findRoutePlace(String idRoute, final ViewHolderSchedule holder) {
+        //Utiliza un DocumentSnapshot
+        routeProvider.getRoute(idRoute).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    if (documentSnapshot.contains("rou_place_starting")) {
+                        String idPlaceStarting = documentSnapshot.getString("rou_place_starting");
+                        findDataPlace(idPlaceStarting, holder, 1);
+                    }
+                    if (documentSnapshot.contains("rou_place_destination")) {
+                        String idPlaceDestination = documentSnapshot.getString("rou_place_destination");
+                        findDataPlace(idPlaceDestination, holder, 2);
+                    }
+                }
+            }
+        });
+
+                /*.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -117,10 +140,10 @@ public class ScheduleAdapter extends FirestoreRecyclerAdapter<Schedule, Schedule
                     }
                 }
             }
-        });
+        });*/
     }
 
-    private void findDataPlace(String idPlace, ViewHolderSchedule holder, int option) {
+    private void findDataPlace(String idPlace, final ViewHolderSchedule holder, int option) {
         placeProvider.findSchedule(idPlace).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -139,6 +162,7 @@ public class ScheduleAdapter extends FirestoreRecyclerAdapter<Schedule, Schedule
     public class ViewHolderSchedule extends RecyclerView.ViewHolder {
         TextView txt_sch_number_disc_bus, txt_sch_place_starting, txt_sch_place_destination, txt_sch_departure_time, txt_sch_state;
         ImageView img_ico_state_bus;
+        View viewHolder;
 
         public ViewHolderSchedule(@NonNull View v) {
             super(v);
@@ -148,6 +172,7 @@ public class ScheduleAdapter extends FirestoreRecyclerAdapter<Schedule, Schedule
             txt_sch_place_destination = v.findViewById(R.id.id_txt_sch_place_destination);;
             txt_sch_departure_time = v.findViewById(R.id.id_txt_sch_departure_time);
             txt_sch_state = v.findViewById(R.id.id_txt_sch_status);
+            viewHolder = v;
         }
     }
 }

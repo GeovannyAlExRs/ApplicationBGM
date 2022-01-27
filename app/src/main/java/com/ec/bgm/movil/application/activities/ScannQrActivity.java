@@ -101,6 +101,7 @@ public class ScannQrActivity extends AppCompatActivity implements View.OnClickLi
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(ScannQrActivity.this, "Usuario *" + email + "* Correcto", Toast.LENGTH_SHORT).show();
+
                             gotoViewScanner();
                         } else {
                             Toast.makeText(ScannQrActivity.this, "Crear usuario *" + email + "*", Toast.LENGTH_SHORT).show();

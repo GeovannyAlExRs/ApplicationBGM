@@ -18,7 +18,9 @@ public class UserGuestProvider {
         return collectionReference.document(userGuest.getId_userGuest()).set(userGuest);
     }
 
-    public Task<DocumentSnapshot> readUsers(String idDoc) {
+    public Task<DocumentSnapshot> getUsersByID(String idDoc) {
         return collectionReference.document(idDoc).get();
     }
+
+
 }

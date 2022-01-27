@@ -22,6 +22,10 @@ public class RouteProvider {
         return collectionReference.whereEqualTo("rou_id", routeID).get();
     }
 
+    public Task<DocumentSnapshot> getRoute(String idRoute) {
+        return collectionReference.document(idRoute).get();
+    }
+
     public Task<QuerySnapshot> findRouteByName(String routeName) {
         return collectionReference.whereEqualTo("rou_name", routeName).get();
     }

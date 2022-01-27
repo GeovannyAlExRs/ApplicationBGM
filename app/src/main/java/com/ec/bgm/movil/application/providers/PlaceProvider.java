@@ -22,4 +22,7 @@ public class PlaceProvider {
         return collectionReference.document(idSchedule).get();
     }
 
+    public Task<QuerySnapshot> getPlaceByName(String namePlace) {
+        return collectionReference.whereEqualTo("pla_name", namePlace).get();
+    }
 }

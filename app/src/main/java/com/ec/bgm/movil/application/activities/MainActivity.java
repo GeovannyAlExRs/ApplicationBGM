@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -18,6 +19,8 @@ import com.ec.bgm.movil.application.fragments.MapsFragment;
 import com.ec.bgm.movil.application.fragments.NotificationFragment;
 import com.ec.bgm.movil.application.fragments.ScheduleFragment;
 import com.ec.bgm.movil.application.includes.MyToolbar;
+import com.ec.bgm.movil.application.providers.AuthFirebaseProvider;
+import com.ec.bgm.movil.application.providers.TokenProvider;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
 
+    TokenProvider tokenProvider;
+    AuthFirebaseProvider authFirebaseProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +41,14 @@ public class MainActivity extends AppCompatActivity {
 
         getViewId();
 
+        tokenProvider = new TokenProvider();
+        authFirebaseProvider = new AuthFirebaseProvider();
+
         viewFragment(new MapsFragment());
+
+        String idUser = authFirebaseProvider.getUidFirebase();
+        Log.d("ENTRO", "ID DEL USUARIO LOGUEADO " + idUser);
+        createToken(idUser);
     }
 
     private void getViewId() {
@@ -100,5 +112,9 @@ public class MainActivity extends AppCompatActivity {
         transaction.replace(R.id.container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private void createToken(String id) {
+        tokenProvider.create(id);
     }
 }

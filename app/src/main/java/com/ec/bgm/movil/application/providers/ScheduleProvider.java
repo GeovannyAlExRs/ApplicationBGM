@@ -28,6 +28,6 @@ public class ScheduleProvider {
     }
 
     public Query findAllSchedule() {
-        return collectionReference.whereEqualTo("sch_status", true).orderBy("sch_departure_time", Query.Direction.DESCENDING);
+        return collectionReference.orderBy("sch_departure_time", Query.Direction.DESCENDING); //REVISAR BIEN LA CONSULTA PARA QUE MUESTRE SOLO LOS DE ESTADO TRUE
     }
 }
