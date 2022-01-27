@@ -24,12 +24,14 @@ import com.ec.bgm.movil.application.model.Bus;
 import com.ec.bgm.movil.application.model.Chat;
 import com.ec.bgm.movil.application.model.FCMBody;
 import com.ec.bgm.movil.application.model.FCMResponse;
+import com.ec.bgm.movil.application.model.Message;
 import com.ec.bgm.movil.application.model.Place;
 import com.ec.bgm.movil.application.providers.AssigneBusProvider;
 import com.ec.bgm.movil.application.providers.AuthFirebaseProvider;
 import com.ec.bgm.movil.application.providers.BusProvider;
 import com.ec.bgm.movil.application.providers.ChatProvider;
 import com.ec.bgm.movil.application.providers.CodeQRProvider;
+import com.ec.bgm.movil.application.providers.MessageProvider;
 import com.ec.bgm.movil.application.providers.NotificationProvider;
 import com.ec.bgm.movil.application.providers.PlaceProvider;
 import com.ec.bgm.movil.application.providers.TokenProvider;
@@ -89,6 +91,8 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
     ChatProvider chatProvider;
     AuthFirebaseProvider authFirebaseProvider;
 
+    MessageProvider messageProvider;
+
     String messagePlace;
     String itemPlaceName;
     String idPlace;
@@ -130,6 +134,8 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
         assigneBusProvider = new AssigneBusProvider();
         busProvider = new BusProvider();
         usersProvider = new UsersProvider();
+
+        messageProvider = new MessageProvider();
 
         placeProvider = new PlaceProvider();
 
@@ -254,23 +260,112 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
             case R.id.id_btn_enviar:
                 Toast.makeText(ColectiveFragment.this.getActivity(), "Mensaje enviado...", Toast.LENGTH_SHORT).show();
 
-                sendNotification(itemPlaceName + " " + messagePlace); // envia la notificacion
-                sendChat(); // crea el chat
+                sendNotification(itemPlaceName); // envia la notificacion
+
+                //checkChatExits();
+
+                String idUserGuest = authFirebaseProvider.getUidFirebase();
+
+                sendChat(idUserGuest); // crea el chat
+
+                txt_message_place.setText("");
                 bottomSheetDialog.dismiss();
                 break;
         }
     }
 
-    private void sendChat() {
+    private void sendChat(String idUserGuest) {
+
         Chat chat = new Chat();
 
+        String id = idUserGuest+idUserAccompanist;
+
+        chat.setIdChat(id);
         chat.setIdUser(idUserAccompanist); // ID del usuario receptor
-        chat.setIdUserGuest(authFirebaseProvider.getUidFirebase()); //ID Usuario emisor
+        chat.setIdUserGuest(idUserGuest); //ID Usuario emisor
         chat.setIdPlace(idPlace);
         chat.setWritting(false);
         chat.setTimestamp(new Date().getTime());
 
+        ArrayList<String> listIDs = new ArrayList<>();
+        listIDs.add(idUserAccompanist);
+        listIDs.add(idUserGuest);
+        chat.setIds(listIDs);
+
         chatProvider.create(chat);
+
+        //sendMessage(idUserGuest);
+        messageDetail(id, idUserGuest);
+    }
+
+    private void sendMessage(final String id) {
+
+        chatProvider.getAllChat(id).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if (document.exists()) {
+                            Chat chat = document.toObject(Chat.class);
+                            Log.d("ENTRO", "(CHAT) Id del CHAT " + chat.getIdChat());
+                            messageDetail(chat.getIdChat(), id);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private void messageDetail(String idChat, final String id) {
+        String msg = txt_message_place.getText().toString();
+        String messageText = "Lugar de destino " + itemPlaceName + " - " + msg;
+
+        Log.d("ENTRO", "(MESSAGE) Mensaje de texto " + messageText + " ID USERS " + id);
+
+        if (!messageText.isEmpty()) {
+            Message message = new Message();
+
+            message.setIdChat(idChat);
+            message.setTimestamp(new  Date().getTime());
+            message.setMessage(messageText);
+            message.setViewed(false);
+
+            if (authFirebaseProvider.getUidFirebase().equals(idUserAccompanist)) {
+                message.setIdSender(idUserAccompanist);
+                message.setIdReceiver(id);
+            } else {
+                message.setIdSender(id);
+                message.setIdReceiver(idUserAccompanist);
+            }
+
+            messageProvider.createMessage(message).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(ColectiveFragment.this.getActivity(), "El mensaje se envio correctamente", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(ColectiveFragment.this.getActivity(), "El mensaje NO se envio correctamente", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+        }
+    }
+
+    private void checkChatExits() {
+        String idUserGuest = authFirebaseProvider.getUidFirebase();
+        chatProvider.checkUsers(idUserGuest, idUserAccompanist).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                int size = queryDocumentSnapshots.size();
+                if (size == 0) {
+                    Toast.makeText(ColectiveFragment.this.getActivity(), " EXISTE EL CHAT", Toast.LENGTH_SHORT).show();
+                    //sendChat();
+                } else {
+                    Toast.makeText(ColectiveFragment.this.getActivity(), " NO EXISTE EL CHAT", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void gotoModalPlace() {
@@ -293,7 +388,7 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
         txt_employment_bsd.setText(idUserAccompanist);
         txt_name_accompanist_bsd.setText(nameUserAccompanist);
         txt_phone_accompanist_bsd.setText(phoneAccompanist);
-        messagePlace = txt_message_place.getText().toString();
+
 
         getDataPlaceSpinner();
 
@@ -371,7 +466,7 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 itemPlaceName = adapterView.getSelectedItem().toString();
 
-                Log.d("ENTRO", "(PLACE) SPINNER Seleccionaste la " + itemPlaceName);
+                Log.d("ENTRO", "(PLACE) SPINNER Seleccionaste " + itemPlaceName);
                 findPlaceByName();
             }
 
@@ -390,6 +485,7 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Place place = document.toObject(Place.class);
                         idPlace = place.getPla_id();
+                        Log.d("ENTRO", "(PLACE) ID Seleccionado " + idPlace);
                     }
                 }
             }

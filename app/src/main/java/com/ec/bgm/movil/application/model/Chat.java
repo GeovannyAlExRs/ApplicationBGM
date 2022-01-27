@@ -1,22 +1,36 @@
 package com.ec.bgm.movil.application.model;
 
+import java.util.ArrayList;
+
 public class Chat {
 
+    private String idChat;
     private boolean isWritting;
     private String idPlace;
     private long timestamp;
     private String idUser;
     private String idUserGuest;
+    private ArrayList<String> ids;
 
     public Chat() {
     }
 
-    public Chat(boolean isWritting, String idPlace, long timestamp, String idUser, String idUserGuest) {
+    public Chat(String idChat, boolean isWritting, String idPlace, long timestamp, String idUser, String idUserGuest, ArrayList<String> ids) {
+        this.idChat = idChat;
         this.isWritting = isWritting;
         this.idPlace = idPlace;
         this.timestamp = timestamp;
         this.idUser = idUser;
         this.idUserGuest = idUserGuest;
+        this.ids = ids;
+    }
+
+    public String getIdChat() {
+        return idChat;
+    }
+
+    public void setIdChat(String idChat) {
+        this.idChat = idChat;
     }
 
     public boolean getWritting() {
@@ -57,5 +71,13 @@ public class Chat {
 
     public void setIdUserGuest(String idUserGuest) {
         this.idUserGuest = idUserGuest;
+    }
+
+    public ArrayList<String> getIds() {
+        return ids;
+    }
+
+    public void setIds(ArrayList<String> ids) {
+        this.ids = ids;
     }
 }

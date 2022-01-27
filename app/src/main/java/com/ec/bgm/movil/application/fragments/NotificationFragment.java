@@ -49,7 +49,7 @@ public class NotificationFragment extends Fragment {
 
 
     private void getAllChatRecyclerView() {
-        Query query = chatProvider.findAllChat(authFirebaseProvider.getUidFirebase());
+        Query query = chatProvider.getAllChat(authFirebaseProvider.getUidFirebase());
         Log.d("ENTRO", "Entro al onStart QUERY CHAT" + query.get());
 
         FirestoreRecyclerOptions<Chat> options = new  FirestoreRecyclerOptions.Builder<Chat>()

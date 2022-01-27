@@ -10,16 +10,11 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_marginTop="@dimen/space56"
+        android:layout_marginBottom="@dimen/space56"
         android:padding="@dimen/space8">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Notificaciones en lista xD"
-            android:textAlignment="textEnd"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/id_recyclerview_notification"

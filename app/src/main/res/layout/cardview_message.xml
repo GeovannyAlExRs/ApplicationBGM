@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/space8"
+    android:paddingRight="@dimen/space8"
+    android:paddingTop="@dimen/space5">
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/round_linear_message"
+        android:padding="@dimen/space8"
+        android:layout_marginLeft="@dimen/space8"
+        android:layout_marginTop="@dimen/space5"
+        android:id="@+id/id_lineartContainerMessage">
+
+        <TextView
+            android:id="@+id/id_crd_txt_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nuevo mensaje de texto"
+            android:textSize="@dimen/h2"/>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="right">
+
+            <TextView
+                android:id="@+id/id_crd_txt_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="time"
+                android:layout_marginRight="@dimen/space5"
+                android:textSize="@dimen/h4"/>
+
+            <ImageView
+                android:id="@+id/id_crd_img_check"
+                android:layout_width="@dimen/space16"
+                android:layout_height="@dimen/space16"
+                android:src="@drawable/ico_check1"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</RelativeLayout>

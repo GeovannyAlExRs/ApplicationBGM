@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".activities.ChatsActivity">
+
+    <include layout="@layout/action_toolbar"/>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_marginBottom="@dimen/space56">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/id_recyclerview_chats"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="@dimen/space8"
+        android:layout_marginTop="@dimen/space8"
+        android:layout_marginRight="@dimen/space8">
+
+        <EditText
+            android:id="@+id/id_text_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Mensaje..."
+            android:inputType="textMultiLine"
+            android:layout_weight="1"
+            android:layout_marginRight="@dimen/space5"
+            android:layout_gravity="left|center"
+            android:background="@drawable/custom_editext_chats"
+            android:padding="@dimen/space8"/>
+
+        <ImageView
+            android:id="@+id/id_Img_btn_send"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@mipmap/ic_send_padding"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -16,15 +16,21 @@
         <meta-data android:name="com.here.sdk.access_key_id" android:value="xERqd5uYl_kr44WtxDVeVQ"/>
         <meta-data android:name="com.here.sdk.access_key_secret" android:value="K4hyrY_YbrjRzVuEi03rXS7m9NExDvkA9Wp_f7zQn-5w_-PgkZ1cO2OQygnjYBMeC3hDP25yg-eQDHRK4Pigqw"/>
 
+        <activity android:name=".activities.ChatsActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.CaptureQRActivity"
             android:screenOrientation="portrait"
             android:stateNotNeeded="true"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity android:name=".activities.ScannQrActivity" />
-        <activity android:name=".activities.LoginActivity" />
-        <activity android:name=".activities.SessionModeActivity" />
-        <activity android:name=".activities.MainActivity" />
+        <activity android:name=".activities.ScannQrActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.LoginActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.SessionModeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.MainActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.SplashActivity"
             android:exported="true">
