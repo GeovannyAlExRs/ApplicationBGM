@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity">
 
-    <!-- TODO: Update blank fragment layout -->
-    <include layout="@layout/action_toolbar"/>
+    <!--include layout="@layout/action_toolbar"/-->
 
     <FrameLayout
         android:layout_width="match_parent"
