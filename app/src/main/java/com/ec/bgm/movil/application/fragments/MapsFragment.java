@@ -23,6 +23,7 @@ import com.ec.bgm.movil.application.R;
 import com.ec.bgm.movil.application.activities.MainActivity;
 import com.ec.bgm.movil.application.activities.SessionModeActivity;
 import com.ec.bgm.movil.application.providers.AuthFirebaseProvider;
+import com.ec.bgm.movil.application.providers.GeoFirestoreProvider;
 import com.ec.bgm.movil.application.providers.PermissionsRequestor;
 import com.ec.bgm.movil.application.providers.PlatformPositioningProvider;
 import com.here.sdk.core.Anchor2D;
@@ -68,6 +69,10 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
     private static final String TYPE_USER = "typeUser";
 
     MapMarker mapMarker;
+    private boolean isConnect = false;
+    GeoCoordinates geoCoordinatesCurrent;
+
+    GeoFirestoreProvider geoFirestoreProvider;
 
     RoutingEngine routingEngine;
     List<Waypoint> waypoints = new ArrayList<>();
@@ -90,7 +95,8 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
 
         getViewId(view, savedInstanceState);
 
-        validationTypeUser(view);
+        geoFirestoreProvider = new GeoFirestoreProvider();
+        authFirebaseProvider = new AuthFirebaseProvider();
 
         //loadMapScene();
 
@@ -109,6 +115,8 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
 
         //addMarker();
         //startlocationMaps();
+
+        validationTypeUser(view);
         handleAndroidPermissions();
 
         try {
@@ -182,6 +190,8 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
                 Log.d("HERE MAPS", "Entro al metodo onLocationUpdated()");
                 // ...
                 //addMarker(view);
+                ac_btn_maps.setText("Desconectar");
+                isConnect = true;
                 convertLocation(location);
             }
         });
@@ -219,10 +229,19 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
 
             MapImage mapImage = MapImageFactory.fromResource(this.getResources(), R.drawable.bgm_marker);
             Anchor2D anchor2D = new Anchor2D(0.5F, 1);
-            mapMarker = new MapMarker(new GeoCoordinates(geoCoordinates.latitude, geoCoordinates.longitude), mapImage, anchor2D);
+            geoCoordinatesCurrent = new GeoCoordinates(geoCoordinates.latitude, geoCoordinates.longitude);
+            mapMarker = new MapMarker(geoCoordinatesCurrent, mapImage, anchor2D);
             mapView.getMapScene().addMapMarker(mapMarker);
+
+            locationsBus();
         } catch (Exception e) {
             Log.d("ENTRO", "Error Fatal: " + e);
+        }
+    }
+
+    private void locationsBus() {
+        if (authFirebaseProvider.getUserSession()!=null) {
+            geoFirestoreProvider.saveLocations(authFirebaseProvider.getUidFirebase(), geoCoordinatesCurrent);
         }
     }
 
@@ -253,7 +272,7 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
                 Log.d("HERE MAPS", "Metodo permissionsGranted()");
                 loadMapScene();
                 //addMarker();
-                startlocationMaps();
+                //startlocationMaps();
             }
 
             @Override
@@ -296,13 +315,27 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.id_btn_maps:
-                //goToView(PruebaActivity.class, false);
-                Toast.makeText(MapsFragment.this.getActivity(), "ERROR LOCATION", Toast.LENGTH_SHORT).show();
+                if (isConnect) {
+                    disconnect();
+                } else {
+                    startlocationMaps();
+                }
                 break;
             case R.id.id_action_logout:
                 authFirebaseProvider.logout();
+                disconnect();
                 goToView(SessionModeActivity.class, true);
                 break;
+        }
+    }
+
+    private void disconnect() {
+        ac_btn_maps.setText("Conectar");
+        isConnect = false;
+        platformPositioningProvider.stopLocating();
+
+        if (authFirebaseProvider.getUserSession()!=null) {
+            geoFirestoreProvider.removeLocations(authFirebaseProvider.getUidFirebase());
         }
     }
 
@@ -334,6 +367,7 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
         } else {
             Toast.makeText(MapsFragment.this.getActivity(), "Tipo de usuario " + selectUser, Toast.LENGTH_SHORT).show();
             ac_btn_maps.setVisibility(view.GONE);
+            startlocationMaps();
         }
     }
 
