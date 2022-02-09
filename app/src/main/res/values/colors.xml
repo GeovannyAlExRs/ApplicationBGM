@@ -13,4 +13,7 @@
     <color name="colorPrimaryLight">#d1e8eb</color>
     <color name="colorPinkTrans">#2cadb8</color>
     <color name="colorBackground">#F4F7F7</color>
+    <color name="colorDelete">#E81954</color>
+    <color name="colorGreen">#0ABF76</color>
+    <color name="colorLocation">#056BA1</color>
 </resources>

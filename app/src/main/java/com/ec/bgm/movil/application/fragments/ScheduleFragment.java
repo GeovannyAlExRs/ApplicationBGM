@@ -1,8 +1,11 @@
 package com.ec.bgm.movil.application.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,35 +14,37 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import com.ec.bgm.movil.application.R;
+import com.ec.bgm.movil.application.activities.SessionModeActivity;
 import com.ec.bgm.movil.application.adapters.ScheduleAdapter;
-import com.ec.bgm.movil.application.model.Route;
 import com.ec.bgm.movil.application.model.Schedule;
+import com.ec.bgm.movil.application.providers.AuthFirebaseProvider;
 import com.ec.bgm.movil.application.providers.RouteProvider;
 import com.ec.bgm.movil.application.providers.ScheduleProvider;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
+import java.util.Date;
 
-public class ScheduleFragment extends Fragment {
+public class ScheduleFragment extends Fragment implements View.OnClickListener {
 
     private RecyclerView recyclerview_schedule;
     private Spinner spinner_schedule;
 
+    AuthFirebaseProvider authFirebaseProvider;
     RouteProvider routeProvider;
     ScheduleProvider scheduleProvider;
     ScheduleAdapter scheduleAdapter;
 
     String scheduleID;
+
+    Toolbar toolbar;
 
     public ScheduleFragment() {
         // Required empty public constructor
@@ -49,7 +54,7 @@ public class ScheduleFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_schedule, container, false);
-        
+        showViewToolbar(view, "BusGeoMap | Horarios", false);
         getViewId(view);
 
         routeProvider = new RouteProvider();
@@ -60,6 +65,15 @@ public class ScheduleFragment extends Fragment {
 
         return view;
     }
+
+    private void showViewToolbar(View view, String title, boolean upbtn) {
+        toolbar = view.findViewById(R.id.id_toolbar);
+
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(title);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(upbtn);
+    }
+
 /*
     private void getDataRouteSpinner() {
         routeProvider.findAllRoute().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -141,17 +155,18 @@ public class ScheduleFragment extends Fragment {
 
     private void getAllScheduleRecyclerView() {
         Query query = scheduleProvider.findAllSchedule();
-        Log.d("ENTRO", "Entro al onStart QUERY " + query.get());
+        Log.d("SCHEDULE", "Entro al onStart QUERY " + query.get());
 
         FirestoreRecyclerOptions<Schedule> options = new  FirestoreRecyclerOptions.Builder<Schedule>()
                 .setQuery(query, Schedule.class)
                 .build();
 
-        Log.d("ENTRO", "FirestoreRecyclerview OPTIONS " +options.toString());
+        Log.d("SCHEDULE", "FirestoreRecyclerview OPTIONS " +options.toString());
 
-        scheduleAdapter = new ScheduleAdapter(options, getContext());
+        scheduleAdapter = new ScheduleAdapter(options, ScheduleFragment.this.getActivity());
         scheduleAdapter.notifyDataSetChanged();
         recyclerview_schedule.setAdapter(scheduleAdapter);
+        //scheduleAdapter.notifyDataSetChanged();
         scheduleAdapter.startListening();
     }
 
@@ -162,14 +177,36 @@ public class ScheduleFragment extends Fragment {
     }
 
     @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.id_action_logout:
+                authFirebaseProvider.logout();
+                goToView(SessionModeActivity.class, true);
+                break;
+        }
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         scheduleAdapter.stopListening();
     }
 
+    public void goToView(Class activiyClass, boolean band) {
+        Intent intent = new Intent(ScheduleFragment.this.getActivity(), activiyClass);
+
+        if (band == false) {
+            startActivity(intent);
+        } else {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
+    }
+
     private void getViewId(View view) {
         recyclerview_schedule = view.findViewById(R.id.id_recyclerview_schedule);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setStackFromEnd(false);
         recyclerview_schedule.setLayoutManager(linearLayoutManager);
 
         spinner_schedule = view.findViewById(R.id.id_spinner_schedule);

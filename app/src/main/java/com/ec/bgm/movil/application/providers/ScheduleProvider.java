@@ -1,5 +1,7 @@
 package com.ec.bgm.movil.application.providers;
 
+import com.ec.bgm.movil.application.model.Schedule;
+import com.ec.bgm.movil.application.model.UserGuest;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -28,6 +30,13 @@ public class ScheduleProvider {
     }
 
     public Query findAllSchedule() {
-        return collectionReference.orderBy("sch_departure_time", Query.Direction.DESCENDING); //REVISAR BIEN LA CONSULTA PARA QUE MUESTRE SOLO LOS DE ESTADO TRUE
+        return collectionReference.whereEqualTo("sch_status", true).orderBy("sch_departure_time", Query.Direction.DESCENDING); //REVISAR BIEN LA CONSULTA PARA QUE MUESTRE SOLO LOS DE ESTADO TRUE
+    }
+    /*public Task<QuerySnapshot> findScheduleStatus() {
+        return collectionReference.whereEqualTo("sch_status", true).orderBy("sch_departure_time", Query.Direction.DESCENDING).get();
+    }*/
+
+    public Task<Void> updateStatusSchedule(Schedule schedule) {
+        return collectionReference.document(schedule.getSch_id()).set(schedule);
     }
 }

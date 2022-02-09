@@ -18,6 +18,7 @@ import com.ec.bgm.movil.application.fragments.ColectiveFragment;
 import com.ec.bgm.movil.application.fragments.MapsFragment;
 import com.ec.bgm.movil.application.fragments.NotificationFragment;
 import com.ec.bgm.movil.application.fragments.ScheduleFragment;
+import com.ec.bgm.movil.application.fragments.StopsFragment;
 import com.ec.bgm.movil.application.includes.MyToolbar;
 import com.ec.bgm.movil.application.providers.AuthFirebaseProvider;
 import com.ec.bgm.movil.application.providers.TokenProvider;
@@ -27,8 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationView;
 
-    private Toolbar toolbar;
-
     TokenProvider tokenProvider;
     AuthFirebaseProvider authFirebaseProvider;
 
@@ -37,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MyToolbar.showView(this, "BusGeoMap", false);
+        //MyToolbar.showView(this, "BusGeoMap", false);
 
         getViewId();
 
@@ -69,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             //disconnect();
             //firebaseAuth.logout();
             goToView(SessionModeActivity.class, 2);
-            Toast.makeText(this, "Cerrar Sesion", Toast.LENGTH_SHORT).show();
+            //8Toast.makeText(this, "Cerrar Sesion", Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -99,8 +98,11 @@ public class MainActivity extends AppCompatActivity {
                         case R.id.id_item_navigation_colective:
                             viewFragment(new ColectiveFragment());
                             return true;
-                        case R.id.id_item_navigation_notifications:
+                        /*case R.id.id_item_navigation_notifications:
                             viewFragment(new NotificationFragment());
+                            return true;*/
+                        case R.id.id_item_navigation_stops:
+                            viewFragment(new StopsFragment());
                             return true;
                     }
                     return true;

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    app:cardCornerRadius="@dimen/radius10"
+    app:cardUseCompatPadding="true">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/space5">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/id_lineartContainer_disc"
+                android:layout_width="@dimen/space24"
+                android:layout_height="@dimen/space24"
+                android:orientation="vertical"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_pin"
+                    android:layout_gravity="center"
+                    android:layout_margin="0dp"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/id_lineartContainer_data_bus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginStart="5dp"
+                android:layout_toEndOf="@+id/id_lineartContainer_disc"
+                android:layout_toRightOf="@+id/id_lineartContainer_disc"
+                android:padding="@dimen/space5">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingBottom="3dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Lugar de destino"
+                        android:textColor="@color/colorPinkTrans"
+                        android:textSize="@dimen/h4"/>
+
+                    <TextView
+                        android:id="@+id/id_txt_place_stops1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=" "
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/h2"
+                        android:layout_marginTop="@dimen/space5"/>
+
+                    <TextView
+                        android:id="@+id/id_txt_tiempo_stops1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="dd/mm/aaaa"
+                        android:textColor="@color/colorWhiteDark"
+                        android:textSize="@dimen/h4"
+                        android:layout_marginTop="@dimen/space5"
+                        android:textAlignment="textEnd"/>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </RelativeLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.cardview.widget.CardView>

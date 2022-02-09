@@ -13,7 +13,11 @@
         android:title="Colectivo"
         android:icon="@drawable/ic_bus"/>
 
-    <item android:id="@+id/id_item_navigation_notifications"
+    <!--item android:id="@+id/id_item_navigation_notifications"
         android:title="Notificaciones"
-        android:icon="@drawable/ic_notifications"/>
+        android:icon="@drawable/ic_notifications"/-->
+
+    <item android:id="@+id/id_item_navigation_stops"
+        android:title="Paradas"
+        android:icon="@drawable/ic_near"/>
 </menu>

@@ -6,7 +6,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -15,17 +18,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ec.bgm.movil.application.R;
+import com.ec.bgm.movil.application.activities.SessionModeActivity;
+import com.ec.bgm.movil.application.model.Assignes_Bus;
 import com.ec.bgm.movil.application.model.Bus;
 import com.ec.bgm.movil.application.model.Chat;
 import com.ec.bgm.movil.application.model.FCMBody;
 import com.ec.bgm.movil.application.model.FCMResponse;
 import com.ec.bgm.movil.application.model.Message;
 import com.ec.bgm.movil.application.model.Place;
+import com.ec.bgm.movil.application.model.Stops;
 import com.ec.bgm.movil.application.providers.AssigneBusProvider;
 import com.ec.bgm.movil.application.providers.AuthFirebaseProvider;
 import com.ec.bgm.movil.application.providers.BusProvider;
@@ -34,6 +42,7 @@ import com.ec.bgm.movil.application.providers.CodeQRProvider;
 import com.ec.bgm.movil.application.providers.MessageProvider;
 import com.ec.bgm.movil.application.providers.NotificationProvider;
 import com.ec.bgm.movil.application.providers.PlaceProvider;
+import com.ec.bgm.movil.application.providers.StopsProvider;
 import com.ec.bgm.movil.application.providers.TokenProvider;
 import com.ec.bgm.movil.application.providers.UsersProvider;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -45,6 +54,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,15 +66,18 @@ import retrofit2.Response;
 
 public class ColectiveFragment extends Fragment implements View.OnClickListener {
 
-    private TextView txt_number_disc_bus, txt_registration_number, txt_sch_bus_size;
+    private TextView txt_number_disc_bus, txt_registration_number, txt_sch_bus_size, txt_alerta;
     private TextView txt_first_name_driver, txt_last_name_driver, txt_phone_driver, txt_address_driver;
     private TextView txt_first_name_accompanist, txt_last_name_accompanist, txt_phone_accompanist, txt_address_accompanist;
 
-    private TextInputEditText txt_message_place;
-    private TextView txt_name_accompanist_bsd, txt_phone_accompanist_bsd, txt_employment_bsd;
+    private TextView txt_name_accompanist_bsd, txt_employment_bsd;
     private Spinner spinner_place;
 
-    private AppCompatButton ac_btn_select_stops, ac_btn_enviar;
+    private AppCompatButton ac_btn_select_stops;
+    private ImageView img_btn_send;
+    private EditText text_send;
+
+    Toolbar toolbar;
 
     BottomSheetDialog bottomSheetDialog;
 
@@ -77,6 +90,10 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
     SharedPreferences sharedPreferencesAssigneBus; // guardar el valor del code qr
     SharedPreferences.Editor editorAssigneBus;
     private static final String ASSGINEBUS = "asbus";
+
+    SharedPreferences sharedPreferencesUserAccompanist; // Guardar ID USURIO OFICIAL
+    SharedPreferences.Editor editorAccompanist;
+    private static final String USER_ACCOMPANIST = "userAccompanist";
 
     CodeQRProvider codeQRProvider;
     AssigneBusProvider assigneBusProvider;
@@ -92,7 +109,7 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
     AuthFirebaseProvider authFirebaseProvider;
 
     MessageProvider messageProvider;
-
+    StopsProvider stopsProvider;
     String messagePlace;
     String itemPlaceName;
     String idPlace;
@@ -109,26 +126,14 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_colective, container, false);
-
+        showViewToolbar(view, "BusGeoMap | Bus", false);
         getViewId(view);
-
-        sharedPreferencesCode = ColectiveFragment.this.getActivity().getSharedPreferences(CODEQR, Context.MODE_PRIVATE);
-        String idCodeQR = sharedPreferencesCode.getString("qr", "");
-
-        sharedPreferencesUser = ColectiveFragment.this.getActivity().getSharedPreferences(TYPE_USER, Context.MODE_PRIVATE);
-        String selectUser = sharedPreferencesUser.getString("user", "");
-
 
         sharedPreferencesAssigneBus = ColectiveFragment.this.getActivity().getSharedPreferences(ASSGINEBUS, Context.MODE_PRIVATE);
         editorAssigneBus = sharedPreferencesAssigneBus.edit();
 
-        // Verifica el tipo de usuario y oculta el elemento
-        if (selectUser == "empleado") {
-            Toast.makeText(ColectiveFragment.this.getActivity(), "Tipo de usuario " + selectUser, Toast.LENGTH_SHORT).show();
-            ac_btn_select_stops.setVisibility(view.GONE);
-        } else {
-            Toast.makeText(ColectiveFragment.this.getActivity(), "Tipo de usuario " + selectUser, Toast.LENGTH_SHORT).show();
-        }
+        sharedPreferencesUserAccompanist = ColectiveFragment.this.getActivity().getSharedPreferences(USER_ACCOMPANIST, Context.MODE_PRIVATE);
+        editorAccompanist = sharedPreferencesUserAccompanist.edit();
 
         codeQRProvider = new CodeQRProvider();
         assigneBusProvider = new AssigneBusProvider();
@@ -136,7 +141,7 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
         usersProvider = new UsersProvider();
 
         messageProvider = new MessageProvider();
-
+        stopsProvider = new StopsProvider();
         placeProvider = new PlaceProvider();
 
         notificationProvider = new NotificationProvider();
@@ -145,10 +150,53 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
         chatProvider = new ChatProvider();
         authFirebaseProvider = new AuthFirebaseProvider();
 
-        findDataQR(idCodeQR);
+        validationTypeUser(view);
 
         return view;
     }
+
+    private void validationTypeUser(View view) {
+        sharedPreferencesUser = ColectiveFragment.this.getActivity().getSharedPreferences(TYPE_USER, Context.MODE_PRIVATE);
+        String selectUser = sharedPreferencesUser.getString("user", "");
+
+        if (selectUser.equals("empleado")) {
+            Toast.makeText(ColectiveFragment.this.getActivity(), "Tipo de usuario " + selectUser, Toast.LENGTH_SHORT).show();
+            ac_btn_select_stops.setVisibility(view.GONE);
+
+            ac_btn_select_stops.setVisibility(view.GONE);
+
+            txt_phone_driver.setVisibility(View.VISIBLE);
+            txt_phone_accompanist.setVisibility(view.VISIBLE);
+
+            txt_address_driver.setVisibility(view.VISIBLE);
+            txt_address_accompanist.setVisibility(view.VISIBLE);
+            String id = authFirebaseProvider.getUidFirebase();
+
+            findDataAssigneBusByUser(id);
+
+        }
+        if (selectUser.equals("invitado")) {
+            Toast.makeText(ColectiveFragment.this.getActivity(), "Tipo de usuario " + selectUser, Toast.LENGTH_SHORT).show();
+
+            sharedPreferencesCode = ColectiveFragment.this.getActivity().getSharedPreferences(CODEQR, Context.MODE_PRIVATE);
+            String idCodeQR = sharedPreferencesCode.getString("qr", "");
+            //OJO VERIFICAR
+            Log.d("ENTRO", "INICIO DEL MODULO - ID DEL CODE QR " + idCodeQR);
+            if (!idCodeQR.isEmpty()) {
+                Log.d("ENTRO", "ENTRO A LA CONDICION " + idCodeQR);
+                findDataQR(idCodeQR);
+            }
+
+            ac_btn_select_stops.setVisibility(view.VISIBLE);
+
+            txt_phone_driver.setVisibility(view.GONE);
+            txt_phone_accompanist.setVisibility(view.GONE);
+
+            txt_address_driver.setVisibility(view.GONE);
+            txt_address_accompanist.setVisibility(view.GONE);
+        }
+    }
+
 
     private void findDataQR(String idQR) {
         codeQRProvider.readCodeQRByID(idQR).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -157,9 +205,9 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
                 if (documentSnapshot.exists()) {
                     if (documentSnapshot.contains("gqr_asb_bus_id")) {
                         String idAssigneBus = documentSnapshot.getString("gqr_asb_bus_id");
-                        editorAssigneBus.putString("asbID", idAssigneBus);
-                        editorAssigneBus.apply();
-                        Log.d("ENTRO", "RECUPERO ID DE ASSIGNE BUS  " + idAssigneBus);
+                        //editorAssigneBus.putString("asbID", idAssigneBus);
+                        //editorAssigneBus.apply();
+                        Log.d("ENTRO", "CODIGO QR " + idQR + " RECUPERO ID DE ASSIGNE BUS  " + idAssigneBus);
                         findDataAssigneBus(idAssigneBus);
                     }
 
@@ -168,24 +216,41 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
         });
     }
 
+    // Buscar Documento ASSIGNE BUS por el ID del Documento
     private void findDataAssigneBus(String id) {
+        Log.d("ENTRO", "ID ASSIGNE BUS " + id);
         assigneBusProvider.getAsigneBus(id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
-                    if (documentSnapshot.contains("asb_bus_id")) {
-                        String idBus = documentSnapshot.getString("asb_bus_id");
-                        findDataBus(idBus);
+                    Assignes_Bus assbus = documentSnapshot.toObject(Assignes_Bus.class);
+                    findDataBus(assbus.getAsb_bus_id());
 
-                        String idUserDriver = documentSnapshot.getString("asb_driver_id");
-                        finDataUser(idUserDriver, 1);
-
-                        String idUseraccompanist = documentSnapshot.getString("asb_accompanist_id");
-                        finDataUser(idUseraccompanist, 2);
-
-                    }
-
+                    finDataUser(assbus.getAsb_driver_id(), 1);
+                    finDataUser(assbus.getAsb_accompanist_id(), 2);
                 }
+            }
+        });
+    }
+
+    // Buscar Documento ASSIGNE BUS por el ID del Oficial
+    private void findDataAssigneBusByUser(String id) {
+        Log.d("ENTRO", "ID Usuario empleado " + id);
+        assigneBusProvider.getAsigneBusByUser(id).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if (document.exists()) {
+                            Assignes_Bus assbus = document.toObject(Assignes_Bus.class);
+                            findDataBus(assbus.getAsb_bus_id());
+
+                            finDataUser(assbus.getAsb_driver_id(), 1);
+                            finDataUser(assbus.getAsb_accompanist_id(), 2);
+                        }
+                    }
+                }
+
             }
         });
     }
@@ -240,6 +305,9 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
 
                         // Data of User Accompanist for Botton Sheet Dialog
                         idUserAccompanist = idUser;
+                        editorAccompanist.putString("ID_ACCOMPANIST", idUserAccompanist);
+                        editorAccompanist.apply();
+
                         nameUserAccompanist = first_name + " " + last_name;
                         phoneAccompanist = phone;
                     }
@@ -254,22 +322,20 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
         switch (view.getId()) {
 
             case R.id.id_btn_select_stops:
-                Toast.makeText(ColectiveFragment.this.getActivity(), "Muestra Ahora...", Toast.LENGTH_SHORT).show();
                 gotoModalPlace();
                 break;
-            case R.id.id_btn_enviar:
-                Toast.makeText(ColectiveFragment.this.getActivity(), "Mensaje enviado...", Toast.LENGTH_SHORT).show();
-
+            case R.id.id_Img_btn_send:
                 sendNotification(itemPlaceName); // envia la notificacion
-
                 //checkChatExits();
-
                 String idUserGuest = authFirebaseProvider.getUidFirebase();
-
                 sendChat(idUserGuest); // crea el chat
 
-                txt_message_place.setText("");
                 bottomSheetDialog.dismiss();
+                break;
+            case R.id.id_action_logout:
+                authFirebaseProvider.logout();
+                goToView(SessionModeActivity.class, true);
+                clearViews();
                 break;
         }
     }
@@ -317,39 +383,71 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
     }
 
     private void messageDetail(String idChat, final String id) {
-        String msg = txt_message_place.getText().toString();
+        String msg = text_send.getText().toString();
         String messageText = "Lugar de destino " + itemPlaceName + " - " + msg;
 
-        Log.d("ENTRO", "(MESSAGE) Mensaje de texto " + messageText + " ID USERS " + id);
+        Log.d("ENTRO", "(MESSAGE) ID PLACE "+ idPlace + " Mensaje de texto " + messageText + " ID USERS " + id);
 
         if (!messageText.isEmpty()) {
-            Message message = new Message();
-
-            message.setIdChat(idChat);
-            message.setTimestamp(new  Date().getTime());
-            message.setMessage(messageText);
-            message.setViewed(false);
-
-            if (authFirebaseProvider.getUidFirebase().equals(idUserAccompanist)) {
-                message.setIdSender(idUserAccompanist);
-                message.setIdReceiver(id);
-            } else {
-                message.setIdSender(id);
-                message.setIdReceiver(idUserAccompanist);
-            }
-
-            messageProvider.createMessage(message).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(ColectiveFragment.this.getActivity(), "El mensaje se envio correctamente", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(ColectiveFragment.this.getActivity(), "El mensaje NO se envio correctamente", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
+            //saveMessage(idChat, id, messageText);
+            saveStops(idChat, id, messageText);
         }
+    }
+
+    private void saveMessage(String idChat, final String id, String messageText) {
+        Message message = new Message();
+        message.setIdChat(idChat);
+        message.setTimestamp(new  Date().getTime());
+        message.setMessage(messageText);
+        message.setViewed(false);
+
+        if (authFirebaseProvider.getUidFirebase().equals(idUserAccompanist)) {
+            message.setIdSender(idUserAccompanist);
+            message.setIdReceiver(id);
+        } else {
+            message.setIdSender(id);
+            message.setIdReceiver(idUserAccompanist);
+        }
+
+        messageProvider.createMessage(message).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(ColectiveFragment.this.getActivity(), "El mensaje se envio correctamente", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ColectiveFragment.this.getActivity(), "El mensaje NO se envio correctamente", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void saveStops(String idChat, final String id, String messageText) {
+        Stops stops = new Stops();
+
+        stops.setIdChat(idChat);
+        stops.setTimestamp(new  Date().getTime());
+        stops.setMessage(messageText);
+        stops.setIdPlace(idPlace);
+        stops.setStatus(true);
+
+        if (authFirebaseProvider.getUidFirebase().equals(idUserAccompanist)) {
+            stops.setIdSender(idUserAccompanist);
+            stops.setIdReceiver(id);
+        } else {
+            stops.setIdSender(id);
+            stops.setIdReceiver(idUserAccompanist);
+        }
+
+        stopsProvider.createStops(stops).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(ColectiveFragment.this.getActivity(), "El mensaje se envio correctamente", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ColectiveFragment.this.getActivity(), "El mensaje NO se envio correctamente", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void checkChatExits() {
@@ -373,27 +471,69 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
         bottomSheetDialog.setContentView(R.layout.dialog_place_stops);
         bottomSheetDialog.setCanceledOnTouchOutside(false);
 
+        img_btn_send = bottomSheetDialog.findViewById(R.id.id_Img_btn_send);
+        img_btn_send.setOnClickListener(this);
 
-        ac_btn_enviar = bottomSheetDialog.findViewById(R.id.id_btn_enviar);
-        ac_btn_enviar.setOnClickListener(this);
-
-        txt_message_place = bottomSheetDialog.findViewById(R.id.id_txt_message_place);
-
+        txt_alerta = bottomSheetDialog.findViewById(R.id.id_txt_alerta);
         txt_employment_bsd = bottomSheetDialog.findViewById(R.id.id_txt_employment_bsd);
         txt_name_accompanist_bsd = bottomSheetDialog.findViewById(R.id.id_txt_name_accompanist_bsd);
-        txt_phone_accompanist_bsd = bottomSheetDialog.findViewById(R.id.id_txt_phone_accompanist_bsd);
 
         spinner_place = bottomSheetDialog.findViewById(R.id.id_spinner_place);
 
         txt_employment_bsd.setText(idUserAccompanist);
         txt_name_accompanist_bsd.setText(nameUserAccompanist);
-        txt_phone_accompanist_bsd.setText(phoneAccompanist);
 
+        text_send = bottomSheetDialog.findViewById(R.id.id_text_send);
 
         getDataPlaceSpinner();
 
+        validateSelectStop();
+    }
 
-        bottomSheetDialog.show();
+    private void validateSelectStop() {
+        String idUserSession = authFirebaseProvider.getUidFirebase();
+        stopsProvider.findStopsBySender(idUserSession, idUserAccompanist).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    Log.d("ENTRO", "SE EJECUTO LA TAREA");
+                    if (!task.getResult().isEmpty()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Log.d("ENTRO", "ENTRO AL CICLO DOCUMENTO" + document);
+                            if (document.exists()) {
+                                Log.d("ENTRO", "DOCUMENTO EXISTE");
+                                Stops stops = document.toObject(Stops.class);
+
+                                SimpleDateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy HH");
+
+                                Date current = new Date(new Date().getTime());
+                                final String dateCurrent = dateformat.format(current);
+
+                                Date timestamp = new Date(stops.getTimestamp());
+                                String dateStops = dateformat.format(timestamp);
+
+                                if (dateCurrent.equals(dateStops)) {
+                                    Log.d("ENTRO", "Las Fechas son iguales " + dateStops + " FECHA ACTUAL " + dateCurrent);
+
+                                    Toast.makeText(ColectiveFragment.this.getActivity(), "YA REALIZO UNA PARADA", Toast.LENGTH_LONG).show();
+                                    bottomSheetDialog.dismiss();
+                                } else {
+                                    bottomSheetDialog.show();
+                                    Log.d("ENTRO", "Las Fechas NO coinciden " + dateStops + " FECHA ACTUAL " + dateCurrent);
+                                }
+                            } else {
+                                Log.d("ENTRO", "DOCUMENTO NO EXISTE");
+                                bottomSheetDialog.show();
+                            }
+                        }
+                    } else {
+                        bottomSheetDialog.show();
+                        Log.d("ENTRO", "LA TAREA ES NULO ");
+                    }
+                }
+            }
+        });
+
     }
 
     private void sendNotification(String message) {
@@ -493,9 +633,23 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
 
     }
 
-    private void goToView(Class activiyClass) {
+    private void goToView(Class activiyClass, boolean band) {
         Intent intent = new Intent(ColectiveFragment.this.getActivity(), activiyClass);
-        startActivity(intent);
+
+        if (band == false) {
+            startActivity(intent);
+        } else {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
+    }
+
+    private void showViewToolbar(View view, String title, boolean upbtn) {
+        toolbar = view.findViewById(R.id.id_toolbar);
+
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(title);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(upbtn);
     }
 
     private void getViewId(View view) {
@@ -515,5 +669,41 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
 
         ac_btn_select_stops = view.findViewById(R.id.id_btn_select_stops);
         ac_btn_select_stops.setOnClickListener(this);
+    }
+
+    private void clearViews() {
+        editorAccompanist = null;
+
+        txt_number_disc_bus.setText("00");
+        txt_registration_number.setText("ABC-123");
+        txt_sch_bus_size.setText("00");
+
+        txt_first_name_driver.setText(" ");
+        txt_last_name_driver.setText(" ");
+        txt_phone_driver.setText(" ");
+        txt_address_driver.setText(" ");
+
+        txt_first_name_accompanist.setText(" ");
+        txt_last_name_accompanist.setText(" ");
+        txt_phone_accompanist.setText(" ");
+        txt_address_accompanist.setText(" ");
+
+        txt_alerta.setText(" ");
+        txt_employment_bsd.setText(" ");
+        txt_name_accompanist_bsd.setText(" ");
+
+        txt_employment_bsd.setText(" ");
+        txt_name_accompanist_bsd.setText(" ");
+
+        ac_btn_select_stops.setVisibility(View.VISIBLE);
+
+        ac_btn_select_stops.setVisibility(View.VISIBLE);
+
+        txt_phone_driver.setVisibility(View.VISIBLE);
+        txt_phone_accompanist.setVisibility(View.VISIBLE);
+
+        txt_address_driver.setVisibility(View.VISIBLE);
+        txt_address_accompanist.setVisibility(View.VISIBLE);
+
     }
 }

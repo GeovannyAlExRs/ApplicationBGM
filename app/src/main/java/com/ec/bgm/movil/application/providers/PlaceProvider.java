@@ -22,6 +22,14 @@ public class PlaceProvider {
         return collectionReference.document(idSchedule).get();
     }
 
+    public Task<DocumentSnapshot> getPlaceByID(String id) {
+        return collectionReference.document(id).get();
+    }
+
+    public Task<QuerySnapshot> getPlaceByIDPlace(String id) {
+        return collectionReference.whereEqualTo("pla_id", id).get();
+    }
+
     public Task<QuerySnapshot> getPlaceByName(String namePlace) {
         return collectionReference.whereEqualTo("pla_name", namePlace).get();
     }
