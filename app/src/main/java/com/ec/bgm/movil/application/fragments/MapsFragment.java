@@ -80,10 +80,6 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
     SharedPreferences sharedPreferencesUser; // identificar el tipo de usuario
     private static final String TYPE_USER = "typeUser";
 
-    SharedPreferences sharedPreferencesConection;
-    SharedPreferences.Editor editorConection;
-    private static final String BTN_CONECTION = "conection";
-
     MapMarker mapMarker;
     MapMarker mapMarkerUser;
     private boolean isConnect = false;
@@ -124,13 +120,9 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
         geoFirestoreProvider = new GeoFirestoreProvider();
         authFirebaseProvider = new AuthFirebaseProvider();
 
-        sharedPreferencesConection = MapsFragment.this.getActivity().getSharedPreferences(BTN_CONECTION, Context.MODE_PRIVATE);
-        editorConection = sharedPreferencesConection.edit();
-
         sharedPreferencesCode = MapsFragment.this.getActivity().getSharedPreferences(CODEQR, Context.MODE_PRIVATE);
         String idCodeQR = sharedPreferencesCode.getString("qr", "");
 
-        //OJO VERIFICAR
         Log.d("ENTRO", "INICIO DEL MODULO - ID DEL CODE QR " + idCodeQR);
         if (!idCodeQR.isEmpty()) {
             Log.d("ENTRO", "ENTRO A LA CONDICION " + idCodeQR);
@@ -282,6 +274,12 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
                 mapView.getMapScene().addMapMarker(mapMarker);
                 String idDriverUser = authFirebaseProvider.getUidFirebase();
                 locationsBus(idDriverUser);
+
+                if (isFirstTime) {
+                    Log.d("HERE MAPS", "(User Empleado) entro a la bandera");
+                    isFirstTime = false;
+                    getLocationsBus(geoCoordinatesCurrent);
+                }
             }
             if (selectUser.equals("invitado")) {
                 Log.d("HERE MAPS", "(User Invitado) Crea Marker en el mapa Coordenadas Long[" + geoCoordinates.latitude + "], Lat[" + geoCoordinates.longitude +"], alt[" + geoCoordinates.altitude +"]");
@@ -421,6 +419,13 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
     public void onPause() {
         super.onPause();
         mapView.onPause();
+        if (isConnect) {
+            //startlocationMaps();
+            //disconnect();
+        } else {
+            disconnect();
+            //startlocationMaps();
+        }
     }
 
     @Override
@@ -433,7 +438,7 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
-        //platformPositioningProvider.stopLocating();
+        platformPositioningProvider.stopLocating();
     }
 
     private void findDataQR(String idQR) {
@@ -484,8 +489,6 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
     }
 
     private void disconnect() {
-        editorConection.putString("action", "Conectar");
-        editorConection.apply();
         ac_btn_maps.setText("Conectar");
         isConnect = false;
         platformPositioningProvider.stopLocating();
