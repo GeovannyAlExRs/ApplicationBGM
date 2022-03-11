@@ -517,17 +517,19 @@ public class ColectiveFragment extends Fragment implements View.OnClickListener 
 
                                     Toast.makeText(ColectiveFragment.this.getActivity(), "YA REALIZO UNA PARADA", Toast.LENGTH_LONG).show();
                                     bottomSheetDialog.dismiss();
-                                } else {
+                                    return;
+                                }
+                                if (!dateCurrent.equals(dateStops)){
                                     bottomSheetDialog.show();
                                     Log.d("ENTRO", "Las Fechas NO coinciden " + dateStops + " FECHA ACTUAL " + dateCurrent);
                                 }
                             } else {
                                 Log.d("ENTRO", "DOCUMENTO NO EXISTE");
-                                bottomSheetDialog.show();
+                                //bottomSheetDialog.show();
                             }
                         }
                     } else {
-                        bottomSheetDialog.show();
+                        //bottomSheetDialog.show();
                         Log.d("ENTRO", "LA TAREA ES NULO ");
                     }
                 }
