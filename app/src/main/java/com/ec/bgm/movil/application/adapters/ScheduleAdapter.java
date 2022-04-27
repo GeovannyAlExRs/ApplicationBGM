@@ -132,7 +132,7 @@ public class ScheduleAdapter extends FirestoreRecyclerAdapter<Schedule, Schedule
                     String colorRed = "#E81954";
 
                     if (checkDate >= currentDate.getTime()) {
-                        long current = currentDate.getTime();
+                        //long current = currentDate.getTime();
                         Calendar calendar = Calendar.getInstance();
                         calendar.add(Calendar.MINUTE, + 15);
                         Date horaActual = calendar.getTime();
@@ -147,7 +147,7 @@ public class ScheduleAdapter extends FirestoreRecyclerAdapter<Schedule, Schedule
                     }
                     if (checkDate <= currentDate.getTime()) {
                         //schedule.setSch_status(false);
-                        long current = currentDate.getTime();
+                        //long current = currentDate.getTime();
                         Calendar calendar = Calendar.getInstance();
                         calendar.add(Calendar.MINUTE, -5);
                         Date horaActual = calendar.getTime();
@@ -162,6 +162,7 @@ public class ScheduleAdapter extends FirestoreRecyclerAdapter<Schedule, Schedule
                             schedule.setSch_state("PASADO...");
                             holder.txt_sch_state.setText("PASADO...");
                             holder.txt_sch_state.setTextColor(Color.parseColor(colorRed));
+                            changeStatus(schedule);
                         }
 
                     }
@@ -176,6 +177,21 @@ public class ScheduleAdapter extends FirestoreRecyclerAdapter<Schedule, Schedule
                 }
             }
         });
+    }
+
+    private void changeStatus(Schedule sch) {
+        Date currentDate = new Date();
+        long timestamp = sch.getSch_departure_time();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, + 60);
+        Date horaActual = calendar.getTime();
+        long horaLong = horaActual.getTime();
+
+        if (timestamp <= currentDate.getTime()) {
+            sch.setSch_status(false);
+        }
+
     }
 
     private void saveChangeStatusSchedule(Schedule sch) {

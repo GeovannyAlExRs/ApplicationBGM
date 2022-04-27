@@ -50,7 +50,7 @@ public class Stops2Adapter extends FirestoreRecyclerAdapter<Stops, Stops2Adapter
         DocumentSnapshot documentSnapshot = getSnapshots().getSnapshot(position);
 
         final String idPlace = documentSnapshot.getString("idPlace");
-        findPlaceInfo2(idPlace, holder);
+        //findPlaceInfo2(idPlace, holder);
         cantPlace(idPlace, holder);
     }
 
@@ -63,9 +63,9 @@ public class Stops2Adapter extends FirestoreRecyclerAdapter<Stops, Stops2Adapter
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         if (document.contains("idPlace")) {
                             String place = document.getString("idPlace");
-                            holder.txt_place_stops.setText(place);
+                            //holder.txt_place_stops.setText(place);
                             numStopsPlace.add(place);
-                            //getNamePlace(place, holder);
+                            findPlaceInfo2(place, holder);
                         }
                     }
                     int cant = numStopsPlace.size();

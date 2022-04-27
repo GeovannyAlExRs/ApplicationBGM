@@ -91,8 +91,6 @@ public class Stops1Adapter extends FirestoreRecyclerAdapter<Stops, Stops1Adapter
         } else {
             Log.d("ENTRO", "Las Fechas NO coinciden " + dateStops + " FECHA ACTUAL " + dateCurrent);
         }
-
-
         /*stopsProvider.findStopsBySender(id).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
