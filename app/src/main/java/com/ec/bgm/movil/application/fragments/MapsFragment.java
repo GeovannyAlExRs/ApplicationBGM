@@ -30,6 +30,7 @@ import com.ec.bgm.movil.application.providers.GeoFirestoreProvider;
 import com.ec.bgm.movil.application.providers.PermissionsRequestor;
 import com.ec.bgm.movil.application.providers.PlatformPositioningProvider;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.GeoPoint;
 import com.here.sdk.core.Anchor2D;
@@ -88,7 +89,7 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
     CodeQRProvider codeQRProvider;
     AssigneBusProvider assigneBusProvider;
     private String idDriverBus;
-    private boolean isFirstTime = true;
+    //private boolean isFirstTime = true;
 
     GeoFirestoreProvider geoFirestoreProvider;
 
@@ -104,11 +105,12 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
     public MapsFragment() {
         // Required empty public constructor
     }
-
+    View view;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("HERE MAPS", "Iniciando  Fragment Maps");
-        View view = inflater.inflate(R.layout.fragment_maps, container, false);
+
+        view = inflater.inflate(R.layout.fragment_maps, container, false);
 
         showViewToolbar(view, "BusGeoMap | Mapa", false);
 
@@ -158,6 +160,22 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
         }
 
         routeHereMaps();
+
+        geoFirestoreProvider.getIDLocation(authFirebaseProvider.getUidFirebase()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    if (documentSnapshot.getData().isEmpty()) {
+                        Log.d("DOCUMENT", "Documento sin datos");
+                        disconnect();
+                    }
+                    if (!documentSnapshot.getData().isEmpty()) {
+                        Log.d("DOCUMENT", "Documento con datos ");
+                        startlocationMaps();
+                    }
+                }
+            }
+        });
 
         return view;
     }
@@ -275,11 +293,12 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
                 String idDriverUser = authFirebaseProvider.getUidFirebase();
                 locationsBus(idDriverUser);
 
-                if (isFirstTime) {
+                getLocationsBus(geoCoordinatesCurrent);
+                /*if (isFirstTime) {
                     Log.d("HERE MAPS", "(User Empleado) entro a la bandera");
                     isFirstTime = false;
                     getLocationsBus(geoCoordinatesCurrent);
-                }
+                }*/
             }
             if (selectUser.equals("invitado")) {
                 Log.d("HERE MAPS", "(User Invitado) Crea Marker en el mapa Coordenadas Long[" + geoCoordinates.latitude + "], Lat[" + geoCoordinates.longitude +"], alt[" + geoCoordinates.altitude +"]");
@@ -294,11 +313,13 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
                 mapMarkerUser = new MapMarker(geoCoordinatesUser, mapImage, anchor2D);
                 mapView.getMapScene().addMapMarker(mapMarkerUser);
 
-                if (isFirstTime) {
+                getLocationsBus(geoCoordinatesUser);
+
+                /*if (isFirstTime) {
                     Log.d("HERE MAPS", "(User Invitado) entro a la bandera");
                     isFirstTime = false;
                     getLocationsBus(geoCoordinatesUser);
-                }
+                }*/
             }
 
         } catch (Exception e) {
@@ -419,13 +440,7 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
     public void onPause() {
         super.onPause();
         mapView.onPause();
-        if (isConnect) {
-            //startlocationMaps();
-            //disconnect();
-        } else {
-            disconnect();
-            //startlocationMaps();
-        }
+
     }
 
     @Override
@@ -438,7 +453,7 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
-        platformPositioningProvider.stopLocating();
+        //platformPositioningProvider.stopLocating();
     }
 
     private void findDataQR(String idQR) {
@@ -481,7 +496,9 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.id_action_logout:
-                disconnect();
+                if (isConnect==true) {
+                    disconnect();
+                }
                 authFirebaseProvider.logout();
                 goToView(SessionModeActivity.class, true);
                 break;
@@ -491,11 +508,13 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
     private void disconnect() {
         ac_btn_maps.setText("Conectar");
         isConnect = false;
-        platformPositioningProvider.stopLocating();
-
+        //platformPositioningProvider.stopLocating();
         if (authFirebaseProvider.getUserSession()!=null) {
+            Log.d("HERE MAPS", "ID DE USUARIO " + authFirebaseProvider.getUidFirebase());
             geoFirestoreProvider.removeLocations(authFirebaseProvider.getUidFirebase());
         }
+
+        platformPositioningProvider.stopLocating();
     }
 
     public void goToView(Class activiyClass, boolean band) {
@@ -522,11 +541,11 @@ public class MapsFragment extends Fragment implements View.OnClickListener {
         String selectUser = sharedPreferencesUser.getString("user", "");
 
         if (selectUser.equals("empleado")) {
-            Toast.makeText(MapsFragment.this.getActivity(), "Tipo de usuario " + selectUser, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MapsFragment.this.getActivity(), "Tipo de usuario " + selectUser, Toast.LENGTH_SHORT).show();
             ac_btn_maps.setVisibility(view.VISIBLE);
         }
         if (selectUser.equals("invitado")) {
-            Toast.makeText(MapsFragment.this.getActivity(), "Tipo de usuario " + selectUser, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MapsFragment.this.getActivity(), "Tipo de usuario " + selectUser, Toast.LENGTH_SHORT).show();
             ac_btn_maps.setVisibility(view.GONE);
             startlocationMaps();
         }

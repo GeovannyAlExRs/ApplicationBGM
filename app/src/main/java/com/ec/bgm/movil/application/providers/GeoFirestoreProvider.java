@@ -1,5 +1,6 @@
 package com.ec.bgm.movil.application.providers;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -20,6 +21,10 @@ public class GeoFirestoreProvider {
     public GeoFirestoreProvider() {
         collectionReference = FirebaseFirestore.getInstance().collection("LocationsBus");
         geoFirestore = new GeoFirestore(collectionReference);
+    }
+
+    public Task<DocumentSnapshot> getIDLocation(String id) {
+        return collectionReference.document(id).get();
     }
 
     public void saveLocations(String idDriver, GeoCoordinates geoCoordinates) {
